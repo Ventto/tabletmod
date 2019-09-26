@@ -1,8 +1,10 @@
 MODULE_NAME = tabletmod
+DEBUG = 0
 
 obj-m += $(MODULE_NAME).o
 
 ifeq ($(KDIR),)
+ifeq ($(DEBUG),1)
 
 define MESSAGE
 
@@ -20,7 +22,7 @@ define MESSAGE
 endef
 
 $(warning $(MESSAGE))
-
+endif
 else
 
 .PHONY: all
