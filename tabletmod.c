@@ -100,7 +100,7 @@ static struct iio_dev *tabletmod_find_iio_dev(const char *name)
 static int tabletmod_print_coordinates(struct iio_dev *indio_dev)
 {
 	struct iio_chan_spec const *chans;
-	int i, j, val2;
+	int i, val2;
 	int vals[3];
 
 	if (!indio_dev || !indio_dev->channels) {
@@ -108,24 +108,29 @@ static int tabletmod_print_coordinates(struct iio_dev *indio_dev)
 		return -ENODEV;
 	}
 
-	chans = indio_dev->channels;
 	if (__debug_variable) {
+		chans = indio_dev->channels;
 		for (i = 0; i < indio_dev->num_channels; ++i)
 			DBG("%s: channel%d: type=%d", indio_dev->name, i,
 			    chans->type);
 	}
 
-	pr_info("%s(): %s: trying to read from channel0...\n", __func__,
-		indio_dev->name);
+	chans = indio_dev->channels;
 
-	for (i = 0; i < 3; ++i) {
-		chans = indio_dev->channels;
-		for (j = 0; j < (indio_dev->num_channels - 1); ++j) {
-			indio_dev->info->read_raw(indio_dev, chans++, &vals[j],
-						  &val2, IIO_CHAN_INFO_RAW);
-		}
-		pr_info("%s(): %s: read_raw(channel0): (%d;%d;%d)\n", __func__,
-			indio_dev->name, vals[0], vals[1], vals[2]);
+	/*
+	 * Let's assume that the number of channels is based on the following
+	 * scheme: num_channels = N * IIO_ACCEL + IIO_TIMESTAMP
+	 * where:
+	 *	- `IIO_ACCEL`: an axis data
+	 *	- `IIO_TIMESTAMP`: a delay data.
+	 * and `IIO_ACCEL` channels are leading the channel list
+	 *
+	 * So, the first `num_channels - 1` element(s) of
+	 * the `struct iio_chan_spec` list are the axis data we need to read.
+	 */
+	for (i = 0; i < (indio_dev->num_channels - 1); ++i) {
+		indio_dev->info->read_raw(indio_dev, chans++, &vals[i],
+					  &val2, IIO_CHAN_INFO_RAW);
 	}
 	DBG("%s: (%d;%d;%d)", indio_dev->name, vals[0], vals[1], vals[2]);
 
