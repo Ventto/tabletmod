@@ -18,9 +18,18 @@
 #include <linux/device.h>       // bus_find_device_by_name()
 #include <linux/iio/iio.h>
 
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Thomas Venriès <thomas@cryd.io> ");
-MODULE_DESCRIPTION("Deffered task example");
+#define MODULE_NAME "tabletmod"
+#define __debug_variable debug
+
+#define LOG(level, format, arg...)                                             \
+	do {                                                                   \
+		if (__debug_variable)                                          \
+			pr_##level("%s: %s(): " format "\n", MODULE_NAME,      \
+				   __func__, ##arg);                           \
+	} while (0)
+#define INFO(format, arg...)	LOG(info, format, ##arg)
+#define ERR(format, arg...)	LOG(err, format, ##arg)
+#define DBG(format, arg...)	LOG(warn, format, ##arg)
 
 #define DEFERRED_TASK_DELAY 1000
 
@@ -35,6 +44,7 @@ MODULE_DESCRIPTION("Deffered task example");
 
 // FIXME: add macro angle threshold range (min,max)
 
+static bool debug __read_mostly;
 struct delayed_work accels_work;
 static struct iio_dev *accel1, *accel2;
 
@@ -94,14 +104,15 @@ static int tabletmod_print_coordinates(struct iio_dev *indio_dev)
 	int vals[3];
 
 	if (!indio_dev || !indio_dev->channels) {
-		pr_warn("%s(): device not found\n", __func__);
+		DBG("device not found");
 		return -ENODEV;
 	}
 
 	chans = indio_dev->channels;
-	for (i = 0; i < indio_dev->num_channels; ++i) {
-		pr_info("%s(): %s: channel%d: type=%d\n", __func__,
-			indio_dev->name, i, chans->type);
+	if (__debug_variable) {
+		for (i = 0; i < indio_dev->num_channels; ++i)
+			DBG("%s: channel%d: type=%d", indio_dev->name, i,
+			    chans->type);
 	}
 
 	pr_info("%s(): %s: trying to read from channel0...\n", __func__,
@@ -116,6 +127,7 @@ static int tabletmod_print_coordinates(struct iio_dev *indio_dev)
 		pr_info("%s(): %s: read_raw(channel0): (%d;%d;%d)\n", __func__,
 			indio_dev->name, vals[0], vals[1], vals[2]);
 	}
+	DBG("%s: (%d;%d;%d)", indio_dev->name, vals[0], vals[1], vals[2]);
 
 	return 0;
 }
@@ -127,16 +139,14 @@ static int tabletmod_find_devs(const struct dmi_system_id *dmi)
 	accel1 =  tabletmod_find_iio_dev(tab_devs->accels[0]);
 
 	if (!accel1) {
-		pr_warn("%s(): device %s is missing\n", __func__,
-			tab_devs->accels[0]);
+		ERR("device %s is missing", tab_devs->accels[0]);
 		return -ENODEV;
 	}
 
 	accel2 =  tabletmod_find_iio_dev(tab_devs->accels[1]);
 
 	if (!accel2) {
-		pr_warn("%s(): device %s is missing\n", __func__,
-			tab_devs->accels[0]);
+		ERR("device %s is missing", tab_devs->accels[1]);
 		return -ENODEV;
 	}
 
@@ -149,6 +159,7 @@ static void tabletmod_work_check_angle(struct work_struct *work)
 	// FIXME: Check angle between the two accelerometers
 	// FIXME: Disable trackpad and internal keyboard
 
+	DBG("");
 	tabletmod_print_coordinates(accel1);
 	tabletmod_print_coordinates(accel2);
 
@@ -160,20 +171,17 @@ static int __init tabletmod_init(void)
 	const struct dmi_system_id *dmi;
 	int ret = 0;
 
-	pr_info("%s(): begin\n", __func__);
-
 	/* Identify the machine and verify the required devices are present */
 	ret = dmi_check_system(tabletmod_machines);
 	/* We expect a unique profile per machine */
 	if (ret != 1) {
-		pr_warn("%s(): expects a unique machine profile, but found %d.\n",
-			__func__, ret);
+		ERR("expects a unique machine profile, but found %d.", ret);
 		return 0; // Avoid kernel error
 	}
 	dmi = dmi_first_match(tabletmod_machines);
 
 	if (tabletmod_find_devs(dmi) != 0) {
-		pr_warn("%s(): devices are missing.\n", __func__);
+		ERR("some devices are missing");
 		return -ENODEV;
 	}
 
@@ -191,3 +199,11 @@ static void __exit tabletmod_exit(void)
 
 module_init(tabletmod_init);
 module_exit(tabletmod_exit);
+
+MODULE_AUTHOR("Thomas Venriès <thomas@cryd.io>");
+MODULE_VERSION("0.1");
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Detect the tablet mode from accelerometers and disable inputs accordingly");
+
+module_param(debug, bool, 0644);
+MODULE_PARM_DESC(debug, "Enable debug messages");
