@@ -13,15 +13,10 @@
  */
 
 #include <linux/module.h>
-#include <linux/init.h>
-#include <linux/delay.h>
-#include <linux/workqueue.h>
 #include <linux/dmi.h>
-#include <linux/limits.h>       // PATH_MAX macro
+#include <linux/limits.h>       // define PATH_MAX
 #include <linux/device.h>       // bus_find_device_by_name()
-#include <linux/iio/iio.h>      // struct iio_bus_type
-#include <linux/iio/consumer.h> // devm_iio_get_channel()
-#include <linux/err.h>
+#include <linux/iio/iio.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Thomas Venriès <thomas@cryd.io> ");
@@ -120,7 +115,6 @@ static int tabletmod_print_coordinates(struct iio_dev *indio_dev)
 		}
 		pr_info("%s(): %s: read_raw(channel0): (%d;%d;%d)\n", __func__,
 			indio_dev->name, vals[0], vals[1], vals[2]);
-		ssleep(1);
 	}
 
 	return 0;
