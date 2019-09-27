@@ -63,6 +63,39 @@ def get_coordinates(device_name):
 
     return vec3
 
+def yaw(vec):
+    """Get the Yaw angle of a given vector
+
+    :vec: 3-cells array
+    :returns: float as angle in degree
+
+    """
+
+    return math.atan(vec[0] / math.sqrt(math.pow(vec[1], 2)
+                                        + math.pow(vec[2], 2))) * 180 / math.pi
+
+def pitch(vec):
+    """Get the Pitch angle of a given vector
+
+    :vec: 3-cells array
+    :returns: float as angle in degree
+
+    """
+
+    return math.atan(vec[1] / math.sqrt(math.pow(vec[0], 2)
+                                        + math.pow(vec[2], 2))) * 180 / math.pi
+
+def roll(vec):
+    """Get the Roll angle of a given vector
+
+    :vec: 3-cells array
+    :returns: float as angle in degree
+
+    """
+
+    return math.atan(math.sqrt(math.pow(vec[0], 2)
+                               + math.pow(vec[1], 2)) / vec[2]) * 180 / math.pi
+
 def main():
     """
     Entry point of the script
@@ -71,9 +104,24 @@ def main():
     vec_tp = get_coordinates("iio:device0")
     vec_kb = get_coordinates("iio:device1")
 
+    rx_tp = yaw(vec_tp)
+    ry_tp = pitch(vec_tp)
+    rz_tp = roll(vec_tp)
+
+    rx_kb = yaw(vec_kb)
+    ry_kb = pitch(vec_kb)
+    rz_kb = roll(vec_kb)
+
+    print("\n=== READING ===\n")
     print("vec_tp : ", vec_tp)
+    print("    * yaw   : ", round(rx_tp, 2), "°")
+    print("    * pitch : ", round(ry_tp, 2), "°")
+    print("    * roll  : ", round(rz_tp, 2), "°")
     print("vec_kb : ", vec_kb)
-    print("angle : ", (angle(vec_tp, vec_kb) * 180 / math.pi))
+    print("    * yaw   : ", round(rx_kb, 2), "°")
+    print("    * pitch : ", round(ry_kb, 2), "°")
+    print("    * roll  : ", round(rz_kb, 2), "°")
+    print("angle : ", round(angle(vec_tp, vec_kb) * 180 / math.pi, 2), "°")
 
 if __name__ == "__main__":
     main()
