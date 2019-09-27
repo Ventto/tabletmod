@@ -63,38 +63,38 @@ def get_coordinates(device_name):
 
     return vec3
 
-def yaw(vec):
-    """Get the Yaw angle of a given vector
+def roll(vec):
+    """Get the Roll angle of a given vector
 
     :vec: 3-cells array
-    :returns: float as angle in degree
+    :returns: float as angle in radian
 
     """
 
     return math.atan(vec[0] / math.sqrt(math.pow(vec[1], 2)
-                                        + math.pow(vec[2], 2))) * 180 / math.pi
+                                        + math.pow(vec[2], 2)))
 
 def pitch(vec):
     """Get the Pitch angle of a given vector
 
     :vec: 3-cells array
-    :returns: float as angle in degree
+    :returns: float as angle in radian
 
     """
 
     return math.atan(vec[1] / math.sqrt(math.pow(vec[0], 2)
-                                        + math.pow(vec[2], 2))) * 180 / math.pi
+                                        + math.pow(vec[2], 2)))
 
-def roll(vec):
-    """Get the Roll angle of a given vector
+def yaw(vec):
+    """Get the Yaw angle of a given vector
 
     :vec: 3-cells array
-    :returns: float as angle in degree
+    :returns: float as angle in radian
 
     """
 
     return math.atan(math.sqrt(math.pow(vec[0], 2)
-                               + math.pow(vec[1], 2)) / vec[2]) * 180 / math.pi
+                               + math.pow(vec[1], 2)) / vec[2])
 
 def main():
     """
