@@ -45,7 +45,8 @@
 // FIXME: add macro angle threshold range (min,max)
 
 static bool debug __read_mostly;
-struct delayed_work accels_work;
+
+static struct delayed_work accels_work;
 static struct iio_dev *accel1, *accel2;
 
 struct tabletmod_devs {
