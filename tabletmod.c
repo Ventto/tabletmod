@@ -79,25 +79,7 @@ static const struct dmi_system_id tabletmod_machines[] __initconst = {
 	},
 };
 
-static struct iio_dev *tabletmod_find_iio_dev(const char *name)
-{
-	struct iio_dev *indio_dev;
-	struct device *dev;
-
-	dev = bus_find_device_by_name(&iio_bus_type, NULL, name);
-
-	if (!dev)
-		return NULL;
-
-	indio_dev = container_of(dev, struct iio_dev, dev);
-
-	if (!indio_dev)
-		return NULL;
-
-	return indio_dev;
-}
-
-static int tabletmod_print_coordinates(struct iio_dev *indio_dev)
+static int tabletmod_print_accel_data(struct iio_dev *indio_dev)
 {
 	struct iio_chan_spec const *chans;
 	int i, val2;
@@ -137,21 +119,39 @@ static int tabletmod_print_coordinates(struct iio_dev *indio_dev)
 	return 0;
 }
 
-static int tabletmod_find_devs(const struct dmi_system_id *dmi)
+static struct iio_dev *tabletmod_find_iio_by_name(const char *name)
+{
+	struct iio_dev *indio_dev;
+	struct device *dev;
+
+	dev = bus_find_device_by_name(&iio_bus_type, NULL, name);
+
+	if (!dev)
+		return NULL;
+
+	indio_dev = container_of(dev, struct iio_dev, dev);
+
+	if (!indio_dev)
+		return NULL;
+
+	return indio_dev;
+}
+
+static int tabletmod_check_devices(const struct dmi_system_id *dmi)
 {
 	struct tabletmod_devs *tab_devs = dmi->driver_data;
 
-	accel1 =  tabletmod_find_iio_dev(tab_devs->accels[0]);
+	accel1 =  tabletmod_find_iio_by_name(tab_devs->accels[0]);
 
 	if (!accel1) {
-		ERR("device %s is missing", tab_devs->accels[0]);
+		DBG("device %s is missing", tab_devs->accels[0]);
 		return -ENODEV;
 	}
 
-	accel2 =  tabletmod_find_iio_dev(tab_devs->accels[1]);
+	accel2 =  tabletmod_find_iio_by_name(tab_devs->accels[1]);
 
 	if (!accel2) {
-		ERR("device %s is missing", tab_devs->accels[1]);
+		DBG("device %s is missing", tab_devs->accels[1]);
 		return -ENODEV;
 	}
 
@@ -159,14 +159,28 @@ static int tabletmod_find_devs(const struct dmi_system_id *dmi)
 	return 0;
 }
 
-static void tabletmod_work_check_angle(struct work_struct *work)
+static void disable_inputs(bool disabled)
+{
+	if (disabled && !inputs_disabled)
+		pr_info("disabling inputs\n");
+	else if (!disabled && inputs_disabled)
+		pr_info("re-enabling inputs\n");
+	else
+		return;
+
+	kd_disable(disabled, "isa0060/serio0/input0");
+	mousedev_disable(disabled, "isa0060/serio1/input0");
+	inputs_disabled = disabled;
+}
+
+static void tabletmod_handler(struct work_struct *work)
 {
 	// FIXME: Check angle between the two accelerometers
 	// FIXME: Disable trackpad and internal keyboard
 
 	DBG("");
-	tabletmod_print_coordinates(accel1);
-	tabletmod_print_coordinates(accel2);
+	tabletmod_print_accel_data(accel1);
+	tabletmod_print_accel_data(accel2);
 
 	SCHEDULE_DELAYED_WORK(&accels_work);
 }
@@ -185,12 +199,12 @@ static int __init tabletmod_init(void)
 	}
 	dmi = dmi_first_match(tabletmod_machines);
 
-	if (tabletmod_find_devs(dmi) != 0) {
+	if (tabletmod_check_devices(dmi) != 0) {
 		ERR("some devices are missing");
 		return -ENODEV;
 	}
 
-	INIT_DELAYED_WORK(&accels_work, tabletmod_work_check_angle);
+	INIT_DELAYED_WORK(&accels_work, tabletmod_handler);
 	pr_info("%s(): scheduling work...\n", __func__);
 	SCHEDULE_DELAYED_WORK(&accels_work);
 	return 0;
