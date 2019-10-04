@@ -37,61 +37,6 @@ def get_data_from_accel(device_name):
 
     return vec3
 
-def roll(vec):
-    """Get the Roll angle of a given vector
-
-    :vec: 3-cells array
-    :returns: float as angle in radian
-
-    """
-
-    return math.atan(vec[0] / math.sqrt(math.pow(vec[1], 2)
-                                        + math.pow(vec[2], 2)))
-
-def pitch(vec):
-    """Get the Pitch angle of a given vector
-
-    :vec: 3-cells array
-    :returns: float as angle in radian
-
-    """
-
-    return math.atan(vec[1] / math.sqrt(math.pow(vec[0], 2)
-                                        + math.pow(vec[2], 2)))
-
-def yaw(vec):
-    """Get the Yaw angle of a given vector
-
-    :vec: 3-cells array
-    :returns: float as angle in radian
-
-    """
-
-    return math.atan(math.sqrt(math.pow(vec[0], 2)
-                               + math.pow(vec[1], 2)) / vec[2])
-
-def to_titl_vec(gproj_vec):
-    """ Returns titl angles (in radian) vector from the gravity's projection
-        vector
-
-    :gproj_vec: projection of the gravity vector on the axes
-
-    :returns: vector of triple tilt angles in radian
-    """
-
-    return [roll(gproj_vec), pitch(gproj_vec), yaw(gproj_vec)]
-
-def to_titl_indegree(vec):
-    """ Converts a triple-tilt angle vector from radian to degree
-
-    :vec: triple-tilt angle vector in radian
-
-    :returns: vector of triple tilt angles in degree
-    """
-    return [round(roll(vec)  * (180 / math.pi), 2),
-            round(pitch(vec) * (180 / math.pi), 2),
-            round(yaw(vec)   * (180 / math.pi), 2)]
-
 def print_accels_data(iio_ts, iio_kb):
     """ Print the angle values from two triple-axis accelerometers and
         a timestamp based on the system clock
@@ -105,16 +50,8 @@ def print_accels_data(iio_ts, iio_kb):
     ang_ts = get_data_from_accel(iio_ts)
     ang_kb = get_data_from_accel(iio_kb)
 
-    rot_ts = to_titl_vec(ang_ts)
-    rot_ts = to_titl_indegree(rot_ts)
-
-    rot_kb = to_titl_vec(ang_kb)
-    rot_kb = to_titl_indegree(rot_kb)
-
     print(*ang_ts, sep=";", end=";")
-    print(*rot_ts, sep=";", end=";")
     print(*ang_kb, sep=";", end=";")
-    print(*rot_kb, sep=";", end=";")
 
 def usage(progpath):
     """
