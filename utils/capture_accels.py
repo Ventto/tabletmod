@@ -115,25 +115,32 @@ def print_accels_data(iio_ts, iio_kb):
     print(*rot_ts, sep=";", end=";")
     print(*ang_kb, sep=";", end=";")
     print(*rot_kb, sep=";", end=";")
-    print(int(round(time.time() * 1000)))
 
 def usage(progpath):
     """
     Print the usage of the script
     """
 
-    print("Usage:", os.path.basename(progpath), "IIO_DEVICE1 IIO_DEVICE2")
+    print("Usage:", os.path.basename(progpath), "IIO_DEVICE1 IIO_DEVICE2 TABLET_MODE")
     print("\nArguments:\n  IIO_DEVICE1\tkeyboard's iio device name located ")
     print("\t\tinto the `/sys/bus/iio/devices` directory.")
     print("  IIO_DEVICE2\ttouchscreen's iio device name located ")
     print("\t\tinto the `/sys/bus/iio/devices` directory.")
+    print("  TABLET_MODE\tboolean argument, \"true\" if in tablet mode,")
+    print("\t\totherwise \"false\".")
+    print()
 
 def checkargs(argv):
     """
     Check the script's arguments
     """
 
-    if len(argv) != 3:
+    if len(argv) != 4:
+        usage(argv[0])
+        return 2
+
+    is_tablet = argv[3]
+    if is_tablet not in ("true", "false"):
         usage(argv[0])
         return 2
 
@@ -155,11 +162,12 @@ def main(argv):
     if ret != 0:
         return ret
 
-    iio_tp, iio_kb = argv[1], argv[2]
+    iio_tp, iio_kb, is_tablet = argv[1], argv[2], 1 if argv[3] == "true" else 0
 
-    print("ts_ax;ts_ay;ts_az;ts_rx;ts_ry;ts_rz;kb_ax;kb_ay;kb_az;kb_rx;kb_ry;kb_rz;timestamp")
+    print("ts_ax;ts_ay;ts_az;kb_ax;kb_ay;kb_az;is_tablet")
     while True:
         print_accels_data(iio_tp, iio_kb)
+        print(is_tablet)
         time.sleep(CAPTURE_DATA_DELAY)
 
     return 0
