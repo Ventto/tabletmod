@@ -15,6 +15,7 @@ import os
 import sys
 import math
 
+CAPTURE_DATA_DELAY = 0.2
 IIO_DEVICES_SYSPATH = "/sys/bus/iio/devices"
 
 def get_data_from_accel(device_name):
@@ -157,8 +158,9 @@ def main(argv):
     iio_tp, iio_kb = argv[1], argv[2]
 
     print("ts_ax;ts_ay;ts_az;ts_rx;ts_ry;ts_rz;kb_ax;kb_ay;kb_az;kb_rx;kb_ry;kb_rz;timestamp")
-    for _ in range(10):
+    while True:
         print_accels_data(iio_tp, iio_kb)
+        time.sleep(CAPTURE_DATA_DELAY)
 
     return 0
 
