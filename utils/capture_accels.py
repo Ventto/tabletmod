@@ -9,6 +9,7 @@ Github: https://github.com/Ventto
 Description:
 """
 
+import signal
 import time
 import os
 import sys
@@ -146,6 +147,8 @@ def main(argv):
     """
     Entry point of the script
     """
+
+    signal.signal(signal.SIGINT, lambda sig, frame: sys.exit(0))
 
     ret = checkargs(argv)
     if ret != 0:
