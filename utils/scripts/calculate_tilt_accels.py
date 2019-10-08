@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-File: vec3d_angle.py
+File: calculate_tilt_accels.py
 Author: Thomas "Ventto" Venriès
 Email: thomas.venries@gmail.com
 Github: https://github.com/Ventto
 Description:
+    Caculate and print the triple-axis tilt of two accelerometers
+    as Linux kernel's IIO devices
 """
 
 import math

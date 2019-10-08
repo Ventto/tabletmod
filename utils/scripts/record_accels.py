@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-File: vec3d_angle.py
+File: record_accels.py
 Author: Thomas "Ventto" Venriès
 Email: thomas.venries@gmail.com
 Github: https://github.com/Ventto
 Description:
+    Record data from the triple-axis accelerometers
+    as Linux kernel's IIO devices (iio:device0 and iio:device1)
 """
 
 import signal
