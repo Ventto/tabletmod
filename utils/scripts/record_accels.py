@@ -60,14 +60,14 @@ def usage(progpath):
     Print the usage of the script
     """
 
-    print("Usage:", os.path.basename(progpath), "IIO_DEVICE1 IIO_DEVICE2 TABLET_MODE [DELAY]")
+    print("Usage:", os.path.basename(progpath), "IIO_DEVICE1 IIO_DEVICE2 ANGLE [DELAY]")
     print("\nArguments:\n  IIO_DEVICE1\tkeyboard's iio device name located ")
     print("\t\tinto the `/sys/bus/iio/devices` directory.")
     print("  IIO_DEVICE2\ttouchscreen's iio device name located ")
     print("\t\tinto the `/sys/bus/iio/devices` directory.")
-    print("  TABLET_MODE\tboolean argument, \"true\" if in tablet mode,")
-    print("\t\totherwise \"false\".")
-    print("  DELAY\tdelay in seconds between each record")
+    print("  ANGLE\t\tangle in degree between the laptop's screen and keyboard,")
+    print("\t\tit is an interger value.")
+    print("  DELAY\t\tdelay in seconds between each record")
 
 def checkargs(argv):
     """
@@ -78,8 +78,8 @@ def checkargs(argv):
         usage(argv[0])
         return 2
 
-    is_tablet = argv[3]
-    if is_tablet not in ("true", "false"):
+    angle = argv[3]
+    if not angle.isdigit() or (int(angle) < 0 or int(angle) > 360):
         usage(argv[0])
         return 2
 
@@ -111,13 +111,13 @@ def main(argv):
 
     _iio_tp = argv[1]
     _iio_kb = argv[2]
-    _is_tablet = 1 if argv[3] == "true" else 0
+    _angle = argv[3]
     _delay = CAPTURE_DATA_DELAY if len(argv) != 5 else float(argv[4])
 
     print("ts_ax;ts_ay;ts_az;kb_ax;kb_ay;kb_az;is_tablet")
     while True:
         print_accels_data(_iio_tp, _iio_kb)
-        print(_is_tablet)
+        print(_angle)
         time.sleep(_delay)
 
     return 0
