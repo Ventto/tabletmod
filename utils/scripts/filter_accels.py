@@ -81,7 +81,7 @@ def apply_filter_to_csv(filepath, has_header, sep=SEPARATOR_EUREQA):
     :sep: Data separator for the printed output
     """
     with open(filepath) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=';')
+        csv_reader = csv.reader(csv_file, delimiter=SEPARATOR_EUREQA)
         accels_last = []
         for row in csv_reader:
             if has_header:
