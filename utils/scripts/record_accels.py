@@ -60,21 +60,21 @@ def usage(progpath):
     Print the usage of the script
     """
 
-    print("Usage:", os.path.basename(progpath), "IIO_DEVICE1 IIO_DEVICE2 TABLET_MODE")
+    print("Usage:", os.path.basename(progpath), "IIO_DEVICE1 IIO_DEVICE2 TABLET_MODE [DELAY]")
     print("\nArguments:\n  IIO_DEVICE1\tkeyboard's iio device name located ")
     print("\t\tinto the `/sys/bus/iio/devices` directory.")
     print("  IIO_DEVICE2\ttouchscreen's iio device name located ")
     print("\t\tinto the `/sys/bus/iio/devices` directory.")
     print("  TABLET_MODE\tboolean argument, \"true\" if in tablet mode,")
     print("\t\totherwise \"false\".")
-    print()
+    print("  DELAY\tdelay in seconds between each record")
 
 def checkargs(argv):
     """
     Check the script's arguments
     """
 
-    if len(argv) != 4:
+    if len(argv) < 4:
         usage(argv[0])
         return 2
 
@@ -82,6 +82,14 @@ def checkargs(argv):
     if is_tablet not in ("true", "false"):
         usage(argv[0])
         return 2
+
+    if len(argv) == 5:
+        delay = argv[4]
+        try:
+            float(delay)
+        except ValueError:
+            usage(argv[0])
+            return 2
 
     for i in range(1, 2):
         iiodev_path = IIO_DEVICES_SYSPATH + "/" + argv[i]
@@ -102,12 +110,13 @@ def main(argv):
         return ret
 
     iio_tp, iio_kb, is_tablet = argv[1], argv[2], 1 if argv[3] == "true" else 0
+    _delay = CAPTURE_DATA_DELAY if len(argv) == 5 else float(argv[4])
 
     print("ts_ax;ts_ay;ts_az;kb_ax;kb_ay;kb_az;is_tablet")
     while True:
         print_accels_data(iio_tp, iio_kb)
         print(is_tablet)
-        time.sleep(CAPTURE_DATA_DELAY)
+        time.sleep(_delay)
 
     return 0
 
