@@ -109,10 +109,10 @@ def main(argv):
     if ret != 0:
         return ret
 
-    _iio_tp = argv[0]
+    _iio_tp = argv[1]
     _iio_kb = argv[2]
     _is_tablet = 1 if argv[3] == "true" else 0
-    _delay = CAPTURE_DATA_DELAY if len(argv) == 5 else float(argv[4])
+    _delay = CAPTURE_DATA_DELAY if len(argv) != 5 else float(argv[4])
 
     print("ts_ax;ts_ay;ts_az;kb_ax;kb_ay;kb_az;is_tablet")
     while True:
