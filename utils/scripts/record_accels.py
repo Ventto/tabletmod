@@ -15,9 +15,10 @@ import signal
 import time
 import os
 import sys
-import math
+import keyboard
 
-CAPTURE_DATA_DELAY = 0.2
+RECORD_DATA_DELAY = 3
+RECORD_DATA_WITH_KB_DELAY = 0.2
 IIO_DEVICES_SYSPATH = "/sys/bus/iio/devices"
 
 def get_data_from_accel(device_name):
@@ -113,16 +114,21 @@ def main(argv):
 
     _iio_tp = argv[1]
     _iio_kb = argv[2]
-    _angle = argv[3]
-    _delay = CAPTURE_DATA_DELAY if len(argv) != 5 else float(argv[4])
+    _angle = int(argv[3])
+    _delay = RECORD_DATA_DELAY if len(argv) != 5 else float(argv[4])
 
     print("ts_ax;ts_ay;ts_az;kb_ax;kb_ay;kb_az;is_tablet")
     print("ts_ax;ts_ay;ts_az;kb_ax;kb_ay;kb_az;is_tablet", file=sys.stderr)
     while True:
+        if _angle >= 20:
+            keyboard.wait('end')
+
         print_accels_data(_iio_tp, _iio_kb)
         print(_angle)
-        time.sleep(_delay)
         print(_angle, file=sys.stderr)
+
+        if _angle < 20:
+            time.sleep(_delay)
 
     return 0
 
