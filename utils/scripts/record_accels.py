@@ -54,6 +54,8 @@ def print_accels_data(iio_ts, iio_kb):
 
     print(*ang_ts, sep=";", end=";")
     print(*ang_kb, sep=";", end=";")
+    print(*ang_ts, file=sys.stderr, sep=";", end=";")
+    print(*ang_kb, file=sys.stderr, sep=";", end=";")
 
 def usage(progpath):
     """
@@ -115,10 +117,12 @@ def main(argv):
     _delay = CAPTURE_DATA_DELAY if len(argv) != 5 else float(argv[4])
 
     print("ts_ax;ts_ay;ts_az;kb_ax;kb_ay;kb_az;is_tablet")
+    print("ts_ax;ts_ay;ts_az;kb_ax;kb_ay;kb_az;is_tablet", file=sys.stderr)
     while True:
         print_accels_data(_iio_tp, _iio_kb)
         print(_angle)
         time.sleep(_delay)
+        print(_angle, file=sys.stderr)
 
     return 0
 
