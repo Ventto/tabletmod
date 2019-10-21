@@ -116,13 +116,13 @@ def main():
 
     print("\n=== READING ===\n")
     print("vec_tp : ", vec_tp)
-    print("    * yaw   : ", round(rx_tp, 2), "°")
-    print("    * pitch : ", round(ry_tp, 2), "°")
-    print("    * roll  : ", round(rz_tp, 2), "°")
+    print("    * roll   : ", round(rx_tp * 180 / math.pi, 2), "°")
+    print("    * pitch : ", round(ry_tp * 180 / math.pi, 2), "°")
+    print("    * yaw  : ", round(rz_tp * 180 / math.pi, 2), "°")
     print("vec_kb : ", vec_kb)
-    print("    * yaw   : ", round(rx_kb, 2), "°")
-    print("    * pitch : ", round(ry_kb, 2), "°")
-    print("    * roll  : ", round(rz_kb, 2), "°")
+    print("    * roll   : ", round(rx_kb * 180 / math.pi, 2), "°")
+    print("    * pitch : ", round(ry_kb * 180 / math.pi, 2), "°")
+    print("    * yaw  : ", round(rz_kb * 180 / math.pi, 2), "°")
     print("angle : ", round(angle(vec_tp, vec_kb) * 180 / math.pi, 2), "°")
 
 if __name__ == "__main__":
