@@ -1,7 +1,7 @@
 # ordissimo/tabletmod/Kconfig
 
 config TABLET_MODE
-        tristate "Tablet mode dectection"
+        tristate "Tablet mode dectection for Ordissimo's 2-in-1 hybrid laptops"
         default n
         depends on INPUT_MOUSEDEV && VT
         ---help---
