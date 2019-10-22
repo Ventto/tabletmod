@@ -103,9 +103,7 @@ static int tabletmod_read_accel(struct accel_handler *accel)
 			DBG("%s: channel%d: type=%d", indio_dev->name, i,
 			    chans->type);
 	}
-
 	chans = indio_dev->channels;
-
 	/*
 	 * Let's assume that the number of channels is based on the following
 	 * scheme: num_channels = N * IIO_ACCEL + IIO_TIMESTAMP
@@ -163,8 +161,6 @@ static int tabletmod_check_devices(const struct dmi_system_id *dmi)
 		DBG("device %s is missing", tab_devs->accels[1]);
 		return -ENODEV;
 	}
-
-	// FIXME: Find input devices
 	return 0;
 }
 
@@ -224,7 +220,7 @@ schedule:
 static int __init tabletmod_init(void)
 {
 	const struct dmi_system_id *dmi;
-	int ret = 0;
+	int ret;
 
 	/* Identify the machine and verify the required devices are present */
 	ret = dmi_check_system(tabletmod_machines);
