@@ -20,6 +20,7 @@
 #include <linux/vt_kern.h>        // kd_disable()
 #include <linux/input/mousedev.h> // mousedev_disable()
 #include <linux/limits.h>         // PATH_MAX macro
+#include <acpi/button.h>          // acpi_lid_open()
 
 #define __debug_variable debug
 
@@ -182,6 +183,16 @@ static void tabletmod_disable_inputs(bool disabled)
  */
 static inline bool detect_tabletmode_touchscreen(struct accel_handler *accel)
 {
+	/*
+	 * When the touchscreen is folded back at 360° and facing the ground
+	 * it is the same position than a close laptop put on the desk.
+	 * That's why if the lid is open, we consider a range of position
+	 * as tablet mode.
+	 */
+	if (acpi_lid_open()) {
+		;/* Do something */
+	}
+
 	/* XZ Rotation: forward */
 	return (accel->raw_data[1] < 0 && accel->raw_data[2] < 500)
 		/* XY Rotation: left or right */
