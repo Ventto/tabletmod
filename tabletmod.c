@@ -77,6 +77,9 @@ static const struct dmi_system_id tabletmod_machines[] __initconst = {
 	},
 };
 
+/*
+ * Reads the raw values (Ax, Ay and Az) from a given accelerometer.
+ */
 static int tabletmod_read_accel(struct accel_handler *accel)
 {
 	struct iio_chan_spec const *chans;
@@ -117,6 +120,9 @@ static int tabletmod_read_accel(struct accel_handler *accel)
 	return 0;
 }
 
+/*
+ * Finds a industrial I/O device (or accelerometer in our case) by its name.
+ */
 static struct iio_dev *tabletmod_find_iio_by_name(const char *name)
 {
 	struct iio_dev *indio_dev;
@@ -135,6 +141,9 @@ static struct iio_dev *tabletmod_find_iio_by_name(const char *name)
 	return indio_dev;
 }
 
+/*
+ * Verifies if the devices specified in the system config exist.
+ */
 static int tabletmod_check_devices(const struct dmi_system_id *dmi)
 {
 	struct tabletmod_devs *tab_devs = dmi->driver_data;
@@ -155,6 +164,9 @@ static int tabletmod_check_devices(const struct dmi_system_id *dmi)
 	return 0;
 }
 
+/*
+ * Disables both the 2-in-1 laptop's keyboard and trackpad.
+ */
 static void tabletmod_disable_inputs(bool disabled)
 {
 	if (disabled == inputs_disabled)
@@ -167,6 +179,9 @@ static void tabletmod_disable_inputs(bool disabled)
 	inputs_disabled = disabled;
 }
 
+/*
+ * Detects that the 2-in-1 laptop's touchscreen is in tablet position.
+ */
 static inline bool detect_tabletmode_touchscreen(struct accel_handler *accel)
 {
 	/* XZ Rotation: forward */
@@ -179,6 +194,9 @@ static inline bool detect_tabletmode_touchscreen(struct accel_handler *accel)
 			&& accel->raw_data[2] > 360);
 }
 
+/*
+ * Detects that the laptop's keyboard is in tablet position.
+ */
 static inline bool detect_tabletmode_keyboard(struct accel_handler *accel)
 {	/* XZ Rotation: forward */
 	return (accel->raw_data[0] < 0 && accel->raw_data[2] > -400)
@@ -193,6 +211,10 @@ static inline bool detect_tabletmode_keyboard(struct accel_handler *accel)
 			&& accel->raw_data[2] > -335);
 }
 
+/*
+ * Delayed task function which disables the input devices if it detects that
+ * the laptop is in tablet mode.
+ */
 static void tabletmod_handler(struct work_struct *work)
 {
 	if (tabletmod_read_accel(&ts_hdlr) != 0
