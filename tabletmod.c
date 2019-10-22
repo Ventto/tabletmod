@@ -50,9 +50,9 @@ static struct delayed_work accels_work;
 static bool inputs_disabled = false;
 
 static struct accel_handler {
-	struct iio_dev *dev;
-	int raw_data[3];
-	bool is_tablet;
+	struct	iio_dev *dev;
+	int	raw_data[3];
+	bool	is_tablet;
 } ts_hdlr, kb_hdlr;
 
 struct tabletmod_devs {
