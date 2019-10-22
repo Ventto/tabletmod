@@ -68,7 +68,7 @@ static const struct tabletmod_devs system_configs[] __initconst = {
 
 static const struct dmi_system_id tabletmod_machines[] __initconst = {
 	{
-		.ident = "Ordissimo vz8",
+		.ident = "Ordissimo Julia 2",
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "GeoFlex3"),
 			DMI_MATCH(DMI_BOARD_NAME, "S133AR700"),
