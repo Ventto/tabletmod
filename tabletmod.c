@@ -75,14 +75,6 @@ static const struct dmi_system_id tabletmod_machines[] __initconst = {
 		},
 		.driver_data = (void *) &system_configs[0]
 	},
-	{
-		.ident = "Ordissimo vn1",
-		.matches = {
-			DMI_MATCH(DMI_PRODUCT_NAME, "Julia R37"),
-			DMI_MATCH(DMI_BOARD_NAME, "Julia R37"),
-		},
-		.driver_data = (void *) &system_configs[0]
-	},
 };
 
 static int tabletmod_read_accel(struct accel_handler *accel)
