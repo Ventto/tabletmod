@@ -53,7 +53,7 @@ struct tabletmod_devs {
 	char accels[2][PATH_MAX];
 	char inputs[2][PATH_MAX];
 };
-
+static struct tabletmod_devs system_config;
 static const struct tabletmod_devs system_configs[] __initconst = {
 	{
 		.accels = { "iio:device0", "iio:device1" },
@@ -204,6 +204,8 @@ static int __init tabletmod_init(void)
 		ERR("some devices are missing");
 		return -ENODEV;
 	}
+	/* Store the system config after checking */
+	system_config = *(struct tabletmod_devs *)dmi->driver_data;
 
 	INIT_DELAYED_WORK(&accels_work, tabletmod_handler);
 	pr_info("%s(): scheduling work...\n", __func__);
