@@ -7,11 +7,14 @@ Author: Thomas "Ventto" Venriès
 Email: thomas.venries@gmail.com
 Github: https://github.com/Ventto
 Description:
-    Caculate and print the triple-axis tilt of two accelerometers
+    Caculate and print the triple-axis tilts of two accelerometers
     as Linux kernel's IIO devices
 """
 
+import os
+import sys
 import math
+from columnar import columnar
 
 IIO_DEVICES_SYSPATH = "/sys/bus/iio/devices"
 
@@ -98,32 +101,59 @@ def yaw(vec):
     return math.atan(math.sqrt(math.pow(vec[0], 2)
                                + math.pow(vec[1], 2)) / vec[2])
 
+def usage():
+    """
+    Usage
+    """
+
+    print("Usage:", os.path.basename(sys.argv[0]), "IIO_DEV [IIO_DEVS...]\n")
+    print("Argument:\n")
+    print("  IIO_DEV    accelerometer's name as IIO device located into")
+    print("             the \"/sys/bus/iio/devices/\" directory.\n")
+
+def checkargs(argv):
+    """
+    Checks on command line arguments
+
+    :returns: 0: on success
+              1: internal error
+              2: bad args
+    """
+
+    if len(argv) < 2:
+        usage()
+        return 2
+
+    for name in argv[1:]:
+        if not os.path.exists(IIO_DEVICES_SYSPATH + "/" + name):
+            print(name, ": IIO device (or accelerometer) not found")
+            return 1
+    return 0
+
 def main():
     """
     Entry point of the script
     """
 
-    vec_tp = get_coordinates("iio:device0")
-    vec_kb = get_coordinates("iio:device1")
+    ret = checkargs(sys.argv)
+    if ret != 0:
+        sys.exit(ret)
 
-    rx_tp = yaw(vec_tp)
-    ry_tp = pitch(vec_tp)
-    rz_tp = roll(vec_tp)
+    iio_list = sys.argv[1:]
 
-    rx_kb = yaw(vec_kb)
-    ry_kb = pitch(vec_kb)
-    rz_kb = roll(vec_kb)
+    for accel_name in iio_list:
+        vec = get_coordinates(accel_name)
+        vec_str = [list(map(lambda rot: str(rot), vec))]
 
-    print("\n=== READING ===\n")
-    print("vec_tp : ", vec_tp)
-    print("    * roll   : ", round(rx_tp * 180 / math.pi, 2), "°")
-    print("    * pitch : ", round(ry_tp * 180 / math.pi, 2), "°")
-    print("    * yaw  : ", round(rz_tp * 180 / math.pi, 2), "°")
-    print("vec_kb : ", vec_kb)
-    print("    * roll   : ", round(rx_kb * 180 / math.pi, 2), "°")
-    print("    * pitch : ", round(ry_kb * 180 / math.pi, 2), "°")
-    print("    * yaw  : ", round(rz_kb * 180 / math.pi, 2), "°")
-    print("angle : ", round(angle(vec_tp, vec_kb) * 180 / math.pi, 2), "°")
+        axis_rots = [yaw(vec), pitch(vec), roll(vec)]
+        axis_rots = list(map(lambda rot: round(rot * 180 / math.pi, 2), axis_rots))
+        axis_rots_strs = [list(map(lambda rot: str(rot) + "°", axis_rots))]
+
+        print(" = ", accel_name, " = ")
+        headers = ["Ax", "Ay", "Az"]
+        print(columnar(vec_str, headers))
+        headers = ["roll", "pitch", "yaw"]
+        print(columnar(axis_rots_strs, headers))
 
 if __name__ == "__main__":
     main()
