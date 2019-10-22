@@ -130,15 +130,12 @@ static struct iio_dev *tabletmod_find_iio_by_name(const char *name)
 	struct device *dev;
 
 	dev = bus_find_device_by_name(&iio_bus_type, NULL, name);
-
 	if (!dev)
 		return NULL;
 
 	indio_dev = container_of(dev, struct iio_dev, dev);
-
 	if (!indio_dev)
 		return NULL;
-
 	return indio_dev;
 }
 
