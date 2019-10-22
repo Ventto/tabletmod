@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File: detect_tabletmod.py
+File: detect_tabletmode.py
 Author: Thomas "Ventto" Venriès
 Email: thomas.venries@gmail.com
 Github: https://github.com/Ventto

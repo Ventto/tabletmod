@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File: filter_accels.py
+File: smooth_data.py
 Author: Thomas "Ventto" Venriès
 Email: thomas.venries@gmail.com
 Github: https://github.com/Ventto

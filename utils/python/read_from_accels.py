@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File: record_accels.py
+File: read_from_accels.py
 Author: Thomas "Ventto" Venriès
 Email: thomas.venries@gmail.com
 Github: https://github.com/Ventto

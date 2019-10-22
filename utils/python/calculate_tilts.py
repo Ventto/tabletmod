@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File: calculate_tilt_accels.py
+File: calculate_tilts.py
 Author: Thomas "Ventto" Venriès
 Email: thomas.venries@gmail.com
 Github: https://github.com/Ventto
