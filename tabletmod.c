@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0
 
 /*
- * tabletmod.c: Tablet mode detection disabling trackpad and internal keyboard
+ * tabletmod.c: Detects that a 2-in-1 hybrid laptop is in tablet mode
+ *              and disables the internal keyboard and trackpad accordingly.
  *
  * (C) Copyright 2019 Thomas Venriès
  * Author: Thomas Venriès <thomas@cryd.io>
