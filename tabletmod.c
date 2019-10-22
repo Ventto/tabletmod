@@ -17,6 +17,8 @@
 #include <linux/limits.h>       // define PATH_MAX
 #include <linux/device.h>       // bus_find_device_by_name()
 #include <linux/iio/iio.h>
+#include <linux/vt_kern.h>
+#include <linux/input/mousedev.h>
 
 #define MODULE_NAME "tabletmod"
 #define __debug_variable debug
@@ -42,12 +44,16 @@
 		}                                                              \
 	} while (0)
 
-// FIXME: add macro angle threshold range (min,max)
-
 static bool debug __read_mostly;
 
 static struct delayed_work accels_work;
-static struct iio_dev *accel1, *accel2;
+static bool inputs_disabled = false;
+
+static struct accel_handler {
+	struct iio_dev *dev;
+	int raw_data[3];
+	bool is_tablet;
+} ts_hdlr, kb_hdlr;
 
 struct tabletmod_devs {
 	char accels[2][PATH_MAX];
@@ -80,11 +86,11 @@ static const struct dmi_system_id tabletmod_machines[] __initconst = {
 	},
 };
 
-static int tabletmod_print_accel_data(struct iio_dev *indio_dev)
+static int tabletmod_read_accel(struct accel_handler *accel)
 {
 	struct iio_chan_spec const *chans;
 	int i, val2;
-	int vals[3];
+	struct iio_dev *indio_dev = accel->dev;
 
 	if (!indio_dev || !indio_dev->channels) {
 		DBG("device not found");
@@ -112,10 +118,12 @@ static int tabletmod_print_accel_data(struct iio_dev *indio_dev)
 	 * the `struct iio_chan_spec` list are the axis data we need to read.
 	 */
 	for (i = 0; i < (indio_dev->num_channels - 1); ++i) {
-		indio_dev->info->read_raw(indio_dev, chans++, &vals[i],
-					  &val2, IIO_CHAN_INFO_RAW);
+		indio_dev->info->read_raw(indio_dev, chans++,
+					  &accel->raw_data[i], &val2,
+					  IIO_CHAN_INFO_RAW);
 	}
-	DBG("%s: (%d;%d;%d)", indio_dev->name, vals[0], vals[1], vals[2]);
+	DBG("%s: (%d;%d;%d)", indio_dev->name, accel->raw_data[0],
+	    accel->raw_data[1], accel->raw_data[2]);
 
 	return 0;
 }
@@ -142,16 +150,16 @@ static int tabletmod_check_devices(const struct dmi_system_id *dmi)
 {
 	struct tabletmod_devs *tab_devs = dmi->driver_data;
 
-	accel1 =  tabletmod_find_iio_by_name(tab_devs->accels[0]);
+	ts_hdlr.dev =  tabletmod_find_iio_by_name(tab_devs->accels[0]);
 
-	if (!accel1) {
+	if (!ts_hdlr.dev) {
 		DBG("device %s is missing", tab_devs->accels[0]);
 		return -ENODEV;
 	}
 
-	accel2 =  tabletmod_find_iio_by_name(tab_devs->accels[1]);
+	kb_hdlr.dev =  tabletmod_find_iio_by_name(tab_devs->accels[1]);
 
-	if (!accel2) {
+	if (!kb_hdlr.dev) {
 		DBG("device %s is missing", tab_devs->accels[1]);
 		return -ENODEV;
 	}
@@ -174,15 +182,44 @@ static void disable_inputs(bool disabled)
 	inputs_disabled = disabled;
 }
 
+static inline bool tabletmod_touchscreen_istablet(struct accel_handler *accel)
+{
+	/* XZ Rotation: forward */
+	return (accel->raw_data[1] < 0 && accel->raw_data[2] < 500)
+		/* XY Rotation: left or right */
+		|| (accel->raw_data[1] < 320 && (accel->raw_data[0] > 380
+			|| accel->raw_data[0] < -380))
+		/* XYZ Rotation: forward-left */
+		|| (accel->raw_data[0] > -150 && accel->raw_data[1] < 250
+			&& accel->raw_data[2] > 360);
+}
+
+static inline bool tabletmod_keyboard_istablet(struct accel_handler *accel)
+{	/* XZ Rotation: forward */
+	return (accel->raw_data[0] < 0 && accel->raw_data[2] > -400)
+		/* XZ Rotation: backward */
+		|| (accel->raw_data[0] < 410 && accel->raw_data[2] > 280)
+		/* YZ Rotation: right */
+		|| (accel->raw_data[1] > -445 && accel->raw_data[2] > -260)
+		/* YZ Rotation: left */
+		|| (accel->raw_data[1] > 480 && accel->raw_data[2] > -230)
+		/* XYZ Rotation: forward-left */
+		|| (accel->raw_data[0] > 220 && accel->raw_data[1] < -350
+			&& accel->raw_data[2] > -335);
+}
+
 static void tabletmod_handler(struct work_struct *work)
 {
-	// FIXME: Check angle between the two accelerometers
-	// FIXME: Disable trackpad and internal keyboard
+	if (tabletmod_read_accel(&ts_hdlr) != 0
+			|| tabletmod_read_accel(&kb_hdlr) != 0) {
+		ERR("cannot read from one or both accelerometers");
+		goto schedule;
+	}
 
-	DBG("");
-	tabletmod_print_accel_data(accel1);
-	tabletmod_print_accel_data(accel2);
+	tabletmod_disable_inputs(tabletmod_touchscreen_istablet(&ts_hdlr) ||
+			         tabletmod_keyboard_istablet(&kb_hdlr));
 
+schedule:
 	SCHEDULE_DELAYED_WORK(&accels_work);
 }
 
