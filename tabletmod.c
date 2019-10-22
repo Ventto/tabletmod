@@ -168,17 +168,15 @@ static int tabletmod_check_devices(const struct dmi_system_id *dmi)
 	return 0;
 }
 
-static void disable_inputs(bool disabled)
+static void tabletmod_disable_inputs(bool disabled)
 {
-	if (disabled && !inputs_disabled)
-		pr_info("disabling inputs\n");
-	else if (!disabled && inputs_disabled)
-		pr_info("re-enabling inputs\n");
-	else
+	if (disabled == inputs_disabled)
 		return;
 
-	kd_disable(disabled, "isa0060/serio0/input0");
-	mousedev_disable(disabled, "isa0060/serio1/input0");
+	INFO("%s inputs", (disabled) ? "disabled" : "enabled");
+
+	kd_disable(disabled, system_config.inputs[0]);
+	mousedev_disable(disabled, system_config.inputs[1]);
 	inputs_disabled = disabled;
 }
 
