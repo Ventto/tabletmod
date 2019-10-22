@@ -20,14 +20,13 @@
 #include <linux/input/mousedev.h> // mousedev_disable()
 #include <linux/limits.h>         // PATH_MAX macro
 
-#define MODULE_NAME "tabletmod"
 #define __debug_variable debug
 
 #define LOG(level, format, arg...)                                             \
 	do {                                                                   \
 		if (__debug_variable)                                          \
-			pr_##level("%s: %s(): " format "\n", MODULE_NAME,      \
-				   __func__, ##arg);                           \
+			pr_##level("Tabletmod: %s(): " format "\n", __func__,  \
+				   ##arg);                                     \
 	} while (0)
 #define INFO(format, arg...)	LOG(info, format, ##arg)
 #define ERR(format, arg...)	LOG(err, format, ##arg)
