@@ -167,7 +167,7 @@ static void tabletmod_disable_inputs(bool disabled)
 	inputs_disabled = disabled;
 }
 
-static inline bool tabletmod_touchscreen_istablet(struct accel_handler *accel)
+static inline bool detect_tabletmode_touchscreen(struct accel_handler *accel)
 {
 	/* XZ Rotation: forward */
 	return (accel->raw_data[1] < 0 && accel->raw_data[2] < 500)
@@ -179,7 +179,7 @@ static inline bool tabletmod_touchscreen_istablet(struct accel_handler *accel)
 			&& accel->raw_data[2] > 360);
 }
 
-static inline bool tabletmod_keyboard_istablet(struct accel_handler *accel)
+static inline bool detect_tabletmode_keyboard(struct accel_handler *accel)
 {	/* XZ Rotation: forward */
 	return (accel->raw_data[0] < 0 && accel->raw_data[2] > -400)
 		/* XZ Rotation: backward */
@@ -201,8 +201,8 @@ static void tabletmod_handler(struct work_struct *work)
 		goto schedule;
 	}
 
-	tabletmod_disable_inputs(tabletmod_touchscreen_istablet(&ts_hdlr) ||
-			         tabletmod_keyboard_istablet(&kb_hdlr));
+	tabletmod_disable_inputs(detect_tabletmode_touchscreen(&ts_hdlr) ||
+			         detect_tabletmode_keyboard(&kb_hdlr));
 
 schedule:
 	SCHEDULE_DELAYED_WORK(&accels_work);
