@@ -99,6 +99,9 @@ static int tabletmod_read_accel(struct accel_handler *accel)
 			DBG("%s: channel%d: type=%d", indio_dev->name, i,
 			    chans->type);
 	}
+	/* FIXME: Selects only the `IIO_ACCEL` channels and calls read_raw()
+	 * function.
+	 */
 	chans = indio_dev->channels;
 	/*
 	 * Let's assume that the number of channels is based on the following
@@ -137,6 +140,10 @@ static struct iio_dev *tabletmod_find_iio_by_name(const char *name)
 	indio_dev = container_of(dev, struct iio_dev, dev);
 	if (!indio_dev)
 		return NULL;
+
+	/* TODO: A IIO device must have at least 2 or 3 x IIO_ACCEL-type
+	 *       channels. Otherwise, we return NULL.
+	 */
 	return indio_dev;
 }
 
@@ -173,6 +180,10 @@ static void tabletmod_disable_inputs(bool disabled)
 
 	INFO("%s inputs", (disabled) ? "disabled" : "enabled");
 
+	/*
+	 * TODO: We should access the internal keyboard and trackpad
+	 * input devices without the need of patching the kernel code base:
+	 */
 	kd_disable(disabled, system_config.inputs[0]);
 	mousedev_disable(disabled, system_config.inputs[1]);
 	inputs_disabled = disabled;
