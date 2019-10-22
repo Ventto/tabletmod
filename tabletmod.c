@@ -14,11 +14,11 @@
 
 #include <linux/module.h>
 #include <linux/dmi.h>
-#include <linux/limits.h>       // define PATH_MAX
-#include <linux/device.h>       // bus_find_device_by_name()
 #include <linux/iio/iio.h>
-#include <linux/vt_kern.h>
-#include <linux/input/mousedev.h>
+#include <linux/device.h>         // bus_find_device_by_name()
+#include <linux/vt_kern.h>        // kd_disable()
+#include <linux/input/mousedev.h> // mousedev_disable()
+#include <linux/limits.h>         // PATH_MAX macro
 
 #define MODULE_NAME "tabletmod"
 #define __debug_variable debug
