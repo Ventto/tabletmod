@@ -1,7 +1,7 @@
-Scripts for Accelerometers
-==========================
+Utils
+=====
 
-*"Python scripts which helpt to develop a Linux kernel tablet-mode module driver"*
+*"Scripts which helpt to develop the kernel tablet-mode module"*
 
 # Introduction
 
@@ -26,24 +26,50 @@ Shell script:
 
 # Read
 
+This section deals with reading raw values from accelerometers.
+
 Record every `0.5` second from both `iio:device0` and `iio:device1`
 accelerometers located into the `/sys/bus/iio/devices/` sysfs directory
 and whose the angle between the screen and the keyboard  is `0` degree:
 
 ```
-$ ./record_accels.py iio:device0 iio:device1 0 0.5 2>/dev/null
+$ ./read_from_accels.py iio:device0 iio:device1 0 0.5 2>/dev/null
 ```
 
 > We print both on *stdout* and *stderr* so to avoid duplicating output, redirect for instance the *stderr* to `/dev/null`
 
 # Tilts
 
+This section deals with calculating tilts (roll, pitch and yaw)
+from the accelerometers.
+
+Run the `calculate_tilts.py` script as following:
+
 ```
-$ FIXME
+$ ./calculate_tilts.py iio:device0
+
+ =  iio:device0  =
+|-----|-----|-----|
+|Ax   |Ay   |Az   |
+|=================|
+|1    |2    |3    |
+|-----|-----|-----|
+
+|-----|------|-----|
+|roll |pitch |yaw  |
+|==================|
+|36.7°|32.31°|15.5°|
+|-----|------|-----|
 ```
 
 # Tablet Mode Detection
 
+This section deals with detecting the tablet mode based on the Eureqa formulas
+or empirical thresholds.
+
+
+Run the `detect_tabletmode.py` script as following:
+
 ```
-$ FIXME
+$ ./detect_tabletmode.py [OPTIONS...]
 ```
