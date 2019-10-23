@@ -121,7 +121,7 @@ def main(argv):
     print("ts_ax;ts_ay;ts_az;kb_ax;kb_ay;kb_az;is_tablet", file=sys.stderr)
     while True:
         if _angle >= 20:
-            keyboard.wait('end')
+            keyboard.wait('enter')
 
         print_accels_data(_iio_tp, _iio_kb)
         print(_angle)
