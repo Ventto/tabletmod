@@ -93,12 +93,6 @@ static int tabletmod_read_accel(struct accel_handler *accel)
 		return -ENODEV;
 	}
 
-	if (__debug_variable) {
-		chans = indio_dev->channels;
-		for (i = 0; i < indio_dev->num_channels; ++i)
-			DBG("%s: channel%d: type=%d", indio_dev->name, i,
-			    chans->type);
-	}
 	/* FIXME: Selects only the `IIO_ACCEL` channels and calls read_raw()
 	 * function.
 	 */
