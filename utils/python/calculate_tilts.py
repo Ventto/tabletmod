@@ -11,6 +11,7 @@ Description:
     as Linux kernel's IIO devices
 """
 
+import signal
 import os
 import sys
 import math
@@ -134,6 +135,8 @@ def main():
     """
     Entry point of the script
     """
+
+    signal.signal(signal.SIGINT, lambda sig, frame: sys.exit(0))
 
     ret = checkargs(sys.argv)
     if ret != 0:
