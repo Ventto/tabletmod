@@ -165,7 +165,7 @@ def checkargs(argv):
             usage(argv[0])
             return 2
 
-    for i in range(1, 2):
+    for i in range(1, 3):
         iiodev_path = IIO_DEVICES_SYSPATH + "/" + argv[i]
         if not os.path.exists(iiodev_path):
             print(iiodev_path, ":", "path does not exist")
