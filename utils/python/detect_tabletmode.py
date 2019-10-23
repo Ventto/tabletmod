@@ -16,6 +16,7 @@ import time
 import os
 import sys
 import keyboard
+from columnar import columnar
 
 IIO_DEVICES_SYSPATH = "/sys/bus/iio/devices"
 
@@ -127,13 +128,12 @@ def print_accels_data(iio_ts, iio_kb):
     ang_kb = get_data_from_accel(iio_kb)
     ang_ts = get_data_from_accel(iio_ts)
 
-    print("ts: (", end="")
-    print(*ang_ts, sep=";", end="")
-    print(") ", end="")
-    print(" kb: (", end="")
-    print(*ang_kb, sep=";", end="")
-    print(") ", end="")
-    print(detect_tabletmode_thresholds(ang_kb, ang_ts))
+    is_tablet = detect_tabletmode_thresholds(ang_kb, ang_ts)
+    dsts = list(map(lambda i, j: abs(i - j), ang_ts, ang_kb))
+
+    headers = ["Touchscreen", "Keyboard", "Distances", "IsTablet"]
+    row = [[str(ang_ts), str(ang_kb), str(dsts), str(is_tablet)]]
+    print(columnar(row, headers, max_column_width=18, min_column_width=18, no_borders=True))
 
 def usage(progpath):
     """
