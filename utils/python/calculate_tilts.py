@@ -152,11 +152,13 @@ def main():
         axis_rots = list(map(lambda rot: round(rot * 180 / math.pi, 2), axis_rots))
         axis_rots_strs = [list(map(lambda rot: str(rot) + "°", axis_rots))]
 
-        print(" = ", accel_name, " = ")
+        print("| ", accel_name.upper())
         headers = ["Ax", "Ay", "Az"]
-        print(columnar(vec_str, headers))
+        print(columnar(vec_str, headers, max_column_width=18,
+                       min_column_width=18)[:-1])
         headers = ["roll", "pitch", "yaw"]
-        print(columnar(axis_rots_strs, headers))
+        print(columnar(axis_rots_strs, headers, max_column_width=18,
+                       min_column_width=18))
 
 if __name__ == "__main__":
     main()
