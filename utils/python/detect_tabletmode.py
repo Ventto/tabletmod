@@ -115,8 +115,9 @@ def detect_tabletmode_thresholds(ang_kb, ang_ts):
     :ang_kb: [Ax; Ay; Az]
     :ang_ts: [Ax; Ay; Az]
 
-    : returns: Boolean, True if the 2-in-1 laptop is in tablet mode
+    :returns: Boolean, True if the 2-in-1 laptop is in tablet mode
     """
+
     ##
     # Touchscreen
     # XZ Rotation: forward
