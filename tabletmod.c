@@ -13,6 +13,7 @@
  * of the License.
  */
 
+#include <linux/kernel.h>         // abs()
 #include <linux/module.h>
 #include <linux/dmi.h>
 #include <linux/iio/iio.h>
@@ -188,16 +189,6 @@ static void tabletmod_disable_inputs(bool disabled)
  */
 static inline bool detect_tabletmode_touchscreen(struct accel_handler *accel)
 {
-	/*
-	 * When the touchscreen is folded back at 360° and facing the ground
-	 * it is the same position than a close laptop put on the desk.
-	 * That's why if the lid is open, we consider a range of position
-	 * as tablet mode.
-	 */
-	if (acpi_lid_open()) {
-		;/* Do something */
-	}
-
 	/* XZ Rotation: forward */
 	return (accel->raw_data[1] < 0 && accel->raw_data[2] < 500)
 		/* XY Rotation: left or right */
@@ -225,6 +216,30 @@ static inline bool detect_tabletmode_keyboard(struct accel_handler *accel)
 			&& accel->raw_data[2] > -335);
 }
 
+static u16 distance(int a, int b)
+{
+	if (a > 0 && b > 0)
+		return max(a, b) - min(a, b);
+	else if (a < 0 && b < 0)
+		return abs(a - b);
+	else if (a == b)
+		return 0;
+	return abs(a) + abs(b);
+}
+
+static inline bool detect_tabletmode_parallel(struct accel_handler *accel1,
+					      struct accel_handler *accel2)
+{
+	/*
+	 * When the touchscreen is folded back at 360° and facing the ground
+	 * it is the same position than a close laptop put on the desk.
+	 * That's why if the lid is open, we consider a range of position
+	 * as tablet mode.
+	 */
+	return acpi_lid_open() &&
+	       distance(accel1->raw_data[2], accel2->raw_data[2]) < 100;
+}
+
 /*
  * Delayed task function which disables the input devices if it detects that
  * the laptop is in tablet mode.
@@ -237,8 +252,10 @@ static void tabletmod_handler(struct work_struct *work)
 		goto schedule;
 	}
 
-	tabletmod_disable_inputs(detect_tabletmode_touchscreen(&ts_hdlr) ||
-			         detect_tabletmode_keyboard(&kb_hdlr));
+	tabletmod_disable_inputs(
+		detect_tabletmode_parallel(&ts_hdlr, &kb_hdlr) ||
+		detect_tabletmode_touchscreen(&ts_hdlr) ||
+		detect_tabletmode_keyboard(&kb_hdlr));
 
 schedule:
 	SCHEDULE_DELAYED_WORK(&accels_work);
