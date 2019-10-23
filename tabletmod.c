@@ -301,5 +301,21 @@ MODULE_VERSION("0.1");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Detect the tablet mode from accelerometers and disable inputs accordingly");
 
+/*
+ * The idea is to load kernel modules automatically based on the DMI system
+ * identification information of the BIOS. The DMI system information can
+ * be used to identify a platform.
+ *
+ * We use the `MODULE_ALIAS(_dmi_)` macro to autoload this module
+ * according to a `_dmi_` expression.
+ *
+ * For consistency, use the same DMI information than those
+ * from the `tabletmod_machines[]` array above.
+ *
+ */
+
+// Platform: Ordissimo Julia 2
+MODULE_ALIAS("dmi:bvn*:bvr*:bd*:svn*:pnGeoFlex3:pvr*:rvn*:rnS133AR700:*");
+
 module_param(debug, bool, 0644);
 MODULE_PARM_DESC(debug, "Enable debug messages");
