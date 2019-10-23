@@ -15,11 +15,8 @@ import signal
 import time
 import os
 import sys
-import math
 import keyboard
 
-RECORD_DATA_DELAY = 3
-RECORD_DATA_WITH_KB_DELAY = 0.2
 IIO_DEVICES_SYSPATH = "/sys/bus/iio/devices"
 
 def get_data_from_accel(device_name):
@@ -148,7 +145,8 @@ def usage(progpath):
     print("\t\tinto the `/sys/bus/iio/devices` directory.")
     print("  IIO_DEVICE2\ttouchscreen's iio device name located ")
     print("\t\tinto the `/sys/bus/iio/devices` directory.")
-    print("  DELAY\t\tdelay in seconds between each record")
+    print("  DELAY\t\tdelay in seconds between each record, if it is not set")
+    print("\t\tyou need to press <Enter> key on the keyboard to run \n\t\ta detection.\n")
 
 def checkargs(argv):
     """
@@ -187,11 +185,19 @@ def main(argv):
 
     _iio_tp = argv[1]
     _iio_kb = argv[2]
-    _delay = RECORD_DATA_DELAY if len(argv) != 4 else float(argv[3])
+
+    has_delay = False
+    if len(argv) == 4:
+        _delay = float(argv[3])
+        has_delay = True
 
     while True:
+        if not has_delay:
+            keyboard.wait('enter')
+        else:
+            time.sleep(_delay)
+
         print_accels_data(_iio_tp, _iio_kb)
-        time.sleep(_delay)
 
     return 0
 
