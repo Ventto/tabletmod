@@ -33,7 +33,7 @@
 	} while (0)
 #define INFO(format, arg...)	LOG(info, format, ##arg)
 #define ERR(format, arg...)	LOG(err, format, ##arg)
-#define DBG(format, arg...)	LOG(warn, format, ##arg)
+#define DBG(format, arg...)	LOG(info, format, ##arg)
 
 #define DEFERRED_TASK_DELAY 1000
 
