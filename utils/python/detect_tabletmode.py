@@ -16,6 +16,7 @@ import time
 import os
 import sys
 import keyboard
+import math
 from columnar import columnar
 
 IIO_DEVICES_SYSPATH = "/sys/bus/iio/devices"
@@ -71,6 +72,39 @@ def detect_tabletmode_eureqa(ang_kb, ang_ts):
     res += tmp
 
     return res > 0
+
+def distance(num1, num2):
+    """ Calculate the positive distance beetween two numbers
+
+    :num1: number
+    :num2: number
+
+    :returns: positive number
+    """
+
+    if num1 > 0 and num2 > 0:
+        return max(num1, num2) - min(num1, num2)
+
+    if num1 < 0 and num2 < 0:
+        return abs(num1 - num2)
+
+    if num1 == num2:
+        return 0
+
+    return abs(num1) + abs(num2)
+
+def detect_maxfolded_screen(ang_kb, ang_ts):
+    """ Detects if the touchscreen is folded back at 360 degrees.
+
+        We consider touchscreen and keyboard parallel if the distance between
+        their respective Az is less than an empirical threshold.
+
+    :ang_kb: integer array, [Ax; Ay; Az]
+    :ang_ts: integer array, [Ax; Ay; Az]
+
+    :returns: Boolean, True if the 2-in-1 laptop is in tablet mode
+    """
+    return distance(ang_ts[2], ang_kb[2]) < 100
 
 def detect_tabletmode_thresholds(ang_kb, ang_ts):
     """ Detect the tablet mode
@@ -128,7 +162,8 @@ def print_accels_data(iio_ts, iio_kb):
     ang_kb = get_data_from_accel(iio_kb)
     ang_ts = get_data_from_accel(iio_ts)
 
-    is_tablet = detect_tabletmode_thresholds(ang_kb, ang_ts)
+    is_tablet = (detect_maxfolded_screen(ang_ts, ang_kb) or
+                 detect_tabletmode_thresholds(ang_kb, ang_ts))
     dsts = list(map(lambda i, j: abs(i - j), ang_ts, ang_kb))
 
     headers = ["Touchscreen", "Keyboard", "Distances", "IsTablet"]
