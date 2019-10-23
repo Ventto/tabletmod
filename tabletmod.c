@@ -24,7 +24,6 @@
 #include <acpi/button.h>          // acpi_lid_open()
 
 #define __debug_variable debug
-
 #define LOG(level, format, arg...)                                             \
 	do {                                                                   \
 		if (__debug_variable)                                          \
@@ -36,7 +35,6 @@
 #define DBG(format, arg...)	LOG(info, format, ##arg)
 
 #define DEFERRED_TASK_DELAY 1000
-
 #define SCHEDULE_DELAYED_WORK(_work)                                           \
 	do {                                                                   \
 		if (!schedule_delayed_work(                                    \
@@ -47,20 +45,15 @@
 	} while (0)
 
 static bool debug __read_mostly;
-
 static struct delayed_work accels_work;
-static bool inputs_disabled = false;
 
-static struct accel_handler {
-	struct	iio_dev *dev;
-	int	raw_data[3];
-	bool	is_tablet;
-} ts_hdlr, kb_hdlr;
+static bool inputs_disabled = false;
 
 struct tabletmod_devs {
 	char accels[2][PATH_MAX];
 	char inputs[2][PATH_MAX];
 };
+
 static struct tabletmod_devs system_config;
 static const struct tabletmod_devs system_configs[] __initconst = {
 	{
@@ -79,6 +72,12 @@ static const struct dmi_system_id tabletmod_machines[] __initconst = {
 		.driver_data = (void *) &system_configs[0]
 	},
 };
+
+static struct accel_handler {
+	struct	iio_dev *dev;
+	int	raw_data[3];
+	bool	is_tablet;
+} ts_hdlr, kb_hdlr;
 
 /*
  * Reads the raw values (Ax, Ay and Az) from a given accelerometer.
