@@ -6,6 +6,11 @@ Tablet Mode
 It detects according to accelerometers's calibration datas, if the laptop is in tablet position.
 Consequently, it disables the internal keyboard and trackpad.
 
+Information:
+
+* Built for kernel v4.19.40
+* Tested with accelerometers handled by the `kxcjk1013` driver
+
 # Build
 
 ## As External Module
