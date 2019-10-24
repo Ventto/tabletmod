@@ -1,0 +1,32 @@
+From 516826cb40d854a6b393e726ea85c4b601221bba Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Thomas=20Venri=C3=A8s?= <thomas.venries@gmail.com>
+Date: Wed, 28 Aug 2019 18:26:59 +0200
+Subject: [PATCH 21/22] iio: accel: add missing sensor for some 2-in-1 based
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Some ultrabooks, like VZ8, use KIOX010A sensor on display
+and KIOX020A sensor on keyboard base, to detect tablet mode or screen
+orientation.
+
+Signed-off-by: Thomas Venriès <thomas@cryd.io>
+---
+ drivers/iio/accel/kxcjk-1013.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index e5fdca74a630..a5b0e4ce0dc9 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -1493,6 +1493,7 @@ static const struct acpi_device_id kx_acpi_match[] = {
+ 	{"KXCJ9000", KXCJ91008},
+ 	{"KIOX000A", KXCJ91008},
+ 	{"KIOX010A", KXCJ91008}, /* KXCJ91008 inside the display of a 2-in-1 */
++	{"KIOX020A", KXCJ91008},
+ 	{"KXTJ1009", KXTJ21009},
+ 	{"SMO8500",  KXCJ91008},
+ 	{ },
+-- 
+2.23.0
+
