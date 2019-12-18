@@ -119,10 +119,11 @@ dmi:bvn*:bvr*:bd*:svn*:pn*:pvr*:rvn*:rn*:rvr*:cvn*:ct*:cvr*
 
 ### How to test a DMI modalias ?
 
-Create a `.hwdb` file which will contain the modalias to test following with an arbitrary `test=ok` constant:
+Create a `.hwdb` file which will contain the machine's entire modalias to test:
 
 ```
-# echo "dmi:<my_modalias>\ntest=ok" > /lib/udev/hwdb.d/99-tabletmod.hwdb
+# printf "%s\n FAKE_PROPERTY=ok\n" "<full-modalias>" \
+	> /lib/udev/hwdb.d/99-tabletmod.hwdb
 ```
 
 Update the hardware database with the following command:
@@ -131,12 +132,17 @@ Update the hardware database with the following command:
 # systemd-hwdb update
 ```
 
-Test the modalias :
+Verify if the given modalias matchs with existing one:
 
 ```
-# systemd-hwdb query 'dmi:<my_modalias>'
-dmi:<my_modalias>
-test=ok
+# systemd-hwdb query '<modalias>'
 
-# systemd-hwdb query 'dmi:<bad_modalias>'   (no output if no match)
+<modalias>
+FAKE_PROPERTY=ok
+```
+
+No output if it doesn't match:
+
+```
+# systemd-hwdb query '<bad_modalias>'   (no output if no match)
 ```
