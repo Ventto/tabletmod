@@ -58,7 +58,7 @@ static struct tabletmod_devs system_config;
 static const struct tabletmod_devs system_configs[] __initconst = {
 	{
 		.accels = { "iio:device0", "iio:device1" },
-		.inputs = { "isa0060/serio0/input0", "isa0060/serio0/input1" }
+		.inputs = { "isa0060/serio0/input0", "i2c-SYNA3602:00" }
 	},
 };
 
