@@ -316,5 +316,7 @@ MODULE_DESCRIPTION("Detect the tablet mode from accelerometers and disable input
 
 MODULE_ALIAS("dmi:*:svnOrdissimo:pnJulia2:*:rvnOrdissimo:rnOrdissimo:*:");
 
+MODULE_SOFTDEP("pre: kxcjk_1013");
+
 module_param(debug, bool, 0644);
 MODULE_PARM_DESC(debug, "Enable debug messages");
