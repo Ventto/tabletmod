@@ -282,14 +282,14 @@ static int __init tabletmod_init(void)
 	system_config = *(struct tabletmod_devs *)dmi->driver_data;
 
 	INIT_DELAYED_WORK(&accels_work, tabletmod_handler);
-	pr_info("%s(): scheduling work...\n", __func__);
+	INFO("scheduling work...");
 	SCHEDULE_DELAYED_WORK(&accels_work);
 	return 0;
 }
 
 static void __exit tabletmod_exit(void)
 {
-	pr_info("%s(): canceling work...\n", __func__);
+	INFO("canceling work...");
 	cancel_delayed_work_sync(&accels_work);
 }
 
