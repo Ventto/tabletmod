@@ -57,7 +57,9 @@ struct tabletmod_devs {
 static struct tabletmod_devs system_config;
 static const struct tabletmod_devs system_configs[] __initconst = {
 	{
+		/* Internal keyboard's and touchpad's physical names */
 		.accels = { "iio:device0", "iio:device1" },
+		/* Keyboard and lid's accelerometer physical names */
 		.inputs = { "isa0060/serio0/input0", "i2c-SYNA3602:00" }
 	},
 };
@@ -313,9 +315,13 @@ MODULE_DESCRIPTION("Detect the tablet mode from accelerometers and disable input
  * from the `tabletmod_machines[]` array above.
  *
  */
-
 MODULE_ALIAS("dmi:*:svnOrdissimo:pnJulia2:*:rvnOrdissimo:rnOrdissimo:*:");
 
+/*
+ * We have to load this driver after the accelerometer's drivers.
+ * Without it, we cannot get the iio device via the kernel iio's api.
+ * We need to add a soft dependencie to accelerometer's drivers
+ */
 MODULE_SOFTDEP("pre: kxcjk_1013");
 
 module_param(debug, bool, 0644);
