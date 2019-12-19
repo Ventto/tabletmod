@@ -66,8 +66,8 @@ static const struct dmi_system_id tabletmod_machines[] __initconst = {
 	{
 		.ident = "Ordissimo Julia 2",
 		.matches = {
-			DMI_MATCH(DMI_PRODUCT_NAME, "GeoFlex3"),
-			DMI_MATCH(DMI_BOARD_NAME, "S133AR700"),
+			DMI_MATCH(DMI_PRODUCT_FAMILY, "Ordissimo"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Julia 2"),
 		},
 		.driver_data = (void *) &system_configs[0]
 	},
@@ -314,8 +314,7 @@ MODULE_DESCRIPTION("Detect the tablet mode from accelerometers and disable input
  *
  */
 
-// Platform: Ordissimo Julia 2
-MODULE_ALIAS("dmi:bvn*:bvr*:bd*:svn*:pnGeoFlex3:pvr*:rvn*:rnS133AR700:*");
+MODULE_ALIAS("dmi:*:svnOrdissimo:pnJulia2:*:rvnOrdissimo:rnOrdissimo:*:");
 
 module_param(debug, bool, 0644);
 MODULE_PARM_DESC(debug, "Enable debug messages");
