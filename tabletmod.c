@@ -298,11 +298,6 @@ static void __exit tabletmod_exit(void)
 module_init(tabletmod_init);
 module_exit(tabletmod_exit);
 
-MODULE_AUTHOR("Thomas Venriès <thomas@cryd.io>");
-MODULE_VERSION("0.1");
-MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("Detect the tablet mode from accelerometers and disable inputs accordingly");
-
 /*
  * The idea is to load kernel modules automatically based on the DMI system
  * identification information of the BIOS. The DMI system information can
@@ -323,6 +318,11 @@ MODULE_ALIAS("dmi:*:svnOrdissimo:pnJulia2:*:rvnOrdissimo:rnOrdissimo:*:");
  * We need to add a soft dependencie to accelerometer's drivers
  */
 MODULE_SOFTDEP("pre: kxcjk_1013");
+
+MODULE_AUTHOR("Thomas Venriès <thomas@cryd.io>");
+MODULE_VERSION("0.1");
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Detect the tablet mode from accelerometers and disable inputs accordingly");
 
 module_param(debug, bool, 0644);
 MODULE_PARM_DESC(debug, "Enable debug messages");
